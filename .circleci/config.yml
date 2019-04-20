@@ -27,7 +27,6 @@ jobs:
             git config --global user.name arata-nvm
             git add out/calendar.ics
             git commit -m "Update calendar.ics"
-            git pull origin master
             git push origin master
 
       - run:
