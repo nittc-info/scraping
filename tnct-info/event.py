@@ -1,4 +1,4 @@
-import re, sys
+import re, sys, os
 import requests
 import unicodedata
 from datetime import datetime
@@ -127,7 +127,10 @@ def start():
 	now = datetime.today()
 	year_str = str(now.year)
 
-	output_file_name = sys.argv[1]
+	output_file_name = "out/"  + sys.argv[1]
+
+	if not os.path.exists("out"):
+		os.mkdir("out")
 
 	ical = parse(url, int(year_str))
 
