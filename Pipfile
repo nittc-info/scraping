@@ -6,6 +6,9 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
+icalendar = "*"
+requests = "*"
+beautifulsoup4 = "*"
 
 [requires]
 python_version = "3.6"
