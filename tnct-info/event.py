@@ -120,16 +120,14 @@ def start():
 
 	url = "http://www.tsuyama-ct.ac.jp/gyoujiVer4/gyouji.html"
 
-	if len(sys.argv) != 3:
-		print("Usage: calparse <year> <outfile>")
+	if len(sys.argv) != 2:
+		print("Usage: calparse <outfile>")
 		exit(0)
 
-	year_str = sys.argv[1]
-	if not year_str.isnumeric():
-		print(f"{year_str} is not number.")
-		exit(0)
+	now = datetime.today()
+	year_str = str(now.year)
 
-	output_file_name = sys.argv[2]
+	output_file_name = sys.argv[1]
 
 	ical = parse(url, int(year_str))
 
