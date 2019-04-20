@@ -1,0 +1,43 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.6.7
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
+      - restore_cache:
+          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+
+      - run:
+          name: install dependencies
+          command: |
+            sudo pip install pipenv
+            pipenv install
+
+      - run:
+          name: update calendar
+          command: |
+            pipenv run python tnct-info/event.py out/calendar.ics
+            git config --global user.email arata04962@gmail.com
+            git config --global user.name arata-nvm
+            git add out/calendar.ics
+            git commit -m "Update calendar.ics"
+            git pull git@github.com:arata-nvm/tnct-info.git master
+            git push git@github.com:arata-nvm/tnct-info.git master
+      
+      - run:
+          name: update notice
+          command: |
+            pipenv run python tnct-info/notice.py
+
+      - save_cache:
+          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          paths:
+            - ".venv"
+            - "/usr/local/bin"
+            - "/usr/local/lib/python3.6/site-packages"
