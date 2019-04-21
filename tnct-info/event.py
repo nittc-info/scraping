@@ -80,15 +80,17 @@ def parse_month_line(html_line):
 	return zen_to_han_number(month)
 
 
-def parse(url, year_now):
+def parse(url, now):
 	r = requests.get(url)
 	if r.status_code != 200:
 		raise ConnectionError(f"Status Code:{r.status_code}")
 
 	html_lines = r.content.decode("utf-8").split("\n")
 
+	today_str = f"{now.year}.{now.month}.{now.day}"
+
 	cal = Calendar()
-	cal.add("prodid", f"津山高専行事予定{year_now}年度版")
+	cal.add("prodid", f"津山高専行事予定{now.year}年度版（{today_str}時点）")
 	cal.add("version", "2.0")
 
 	is_next_year = False
@@ -107,9 +109,9 @@ def parse(url, year_now):
 		elif line_type == 2:
 			event_data = parse_event_line(line, cur_month)
 			if is_next_year:
-				event_data.year = year_now + 1
+				event_data.year = now.year + 1
 			else:
-				event_data.year = year_now
+				event_data.year = now.year
 			event_data.month_from = cur_month
 			cal.add_component(event_data.to_ical_event())
 
@@ -125,14 +127,13 @@ def start():
 		exit(0)
 
 	now = datetime.today()
-	year_str = str(now.year)
 
 	output_file_name = "out/"  + sys.argv[1]
 
 	if not os.path.exists("out"):
 		os.mkdir("out")
 
-	ical = parse(url, int(year_str))
+	ical = parse(url, now)
 
 	with open(output_file_name, "w", encoding="utf-8") as f:
 		f.write(ical)
