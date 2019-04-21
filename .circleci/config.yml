@@ -23,8 +23,9 @@ jobs:
 
       - run:
           name: update calendar
+          when: always
           command: |
-            pipenv run python tnct-info/event.py calendar.ics
+            pipenv run python tnct-info/event.py tnct-calendar.ics
             git config --global user.email arata04962@gmail.com
             git config --global user.name arata-nvm
             git add out/calendar.ics
@@ -33,6 +34,7 @@ jobs:
 
       - run:
           name: update notice
+          when: always
           command: |
             pipenv run python tnct-info/notice.py
 
