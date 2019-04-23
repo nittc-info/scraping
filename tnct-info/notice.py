@@ -4,6 +4,7 @@ import utils
 import requests
 import datetime
 from bs4 import BeautifulSoup as BS
+from datetime import datetime, timezone, timedelta
 
 def replace_link(text):
 	text = text.replace('<a href="', '')
@@ -41,7 +42,9 @@ def parse(url, today_str):
 def start():
 	url = "http://www.tsuyama-ct.ac.jp/"
 
-	now = datetime.datetime.today()
+	jst = timezone(timedelta(hours=+9), 'JST')
+
+	now = datetime.now(jst)
 	today_str = f"{now.year}.{now.month}.{now.day}"
 
 	notices = parse(url, today_str)

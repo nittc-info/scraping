@@ -1,10 +1,10 @@
 import re, sys, os
 import requests
 import unicodedata
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from icalendar import Calendar, Event, vDate
 
-RE_MONTH = re.compile(r"([０-９]+)月")
+RE_MONTH = re.compile(r'([０-９]+)月')
 RE_DAY = re.compile(r"([０-９]+)日")
 
 class EventData:
@@ -126,7 +126,9 @@ def start():
 		print("Usage: calparse <outfile>")
 		exit(0)
 
-	now = datetime.today()
+	jst = timezone(timedelta(hours=+9), 'JST')
+
+	now = datetime.now(jst)
 
 	output_file_name = "out/"  + sys.argv[1]
 
