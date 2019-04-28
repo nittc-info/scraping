@@ -4,8 +4,10 @@ import unicodedata
 from datetime import datetime, timezone, timedelta
 from icalendar import Calendar, Event, vDate
 
-RE_MONTH = re.compile(r'([０-９]+)月')
-RE_DAY = re.compile(r"([０-９]+)日")
+RE_MONTH = re.compile(r'＜([０-９]+)月＞')
+RE_EVENT_D = re.compile(r"([０-９]+)日（.）")
+RE_EVENT_D_D = re.compile(r"([０-９]+)日（.）〜([０-９]+)日（.）")
+RE_EVENT_D_MD = re.compile(r"([０-９]+)日（.）〜([０-９]+)月([０-９]+)日（.）")
 
 class EventData:
 	def __init__(self):
@@ -29,55 +31,57 @@ class EventData:
 		return f"{self.subject},{self.month_from}/{self.day_from}/{self.year},{self.month_to}/{self.day_to}/{self.year},TRUE"
 
 
-def zen_to_han_number(num):
+def z2h(num):
 	return int(unicodedata.normalize("NFKC", num))
 
 
-def take_line_type(html_line):
-	# 月を超えての行事に対応するためRE_DAYを先にする
-	if RE_DAY.search(html_line): return 2
+def get_line_type(html_line):
 	if RE_MONTH.search(html_line): return 1
+	if RE_EVENT_D.search(html_line): return 2
+	if RE_EVENT_D_D.search(html_line): return 3
+	if RE_EVENT_D_MD.search(html_line): return 4
 	return 0
 
 
-def parse_event_line(html_line, cur_month):
-	event = EventData()
+def remove_garbage(line):
+	# インデントを除去
+	line = line.replace("  ", "")
 
-	line = html_line.replace("<li>", "").replace("</li>", "")
-	name = line.split("　")[-1]
+	# タグを除去
+	line = line.replace("<li>", "")
+	line = line.replace("</li>", "")
 
+	return line
+
+
+def add_type(subject):
 	ryou = "寮"
 	event_ryou = "【寮】"
 	event_school = "【学校】"
-	if ryou in name:
-		event.subject = event_ryou + name
+	if ryou in subject:
+		return event_ryou + subject
 	else:
-		event.subject = event_school + name
-
-	day = RE_DAY.findall(line)
-	month = RE_MONTH.findall(line)
-
-	event.month_from = cur_month
-	event.day_from = zen_to_han_number(day[0])
-
-	if len(day) == 1:
-		event.month_to = event.month_from
-		event.day_to = event.day_from
-	elif len(day) >= 2:
-		if len(month) == 1:
-			event.month_to = zen_to_han_number(month[0])
-		else:
-			event.month_to = cur_month
-		event.day_from = zen_to_han_number(day[0])
-		event.day_to = zen_to_han_number(day[1])
-	else:
-		print("Unable to parsing:" + line)
-	return event
+		return event_school + subject
 
 
-def parse_month_line(html_line):
-	month = RE_MONTH.search(html_line).groups()[0]
-	return zen_to_han_number(month)
+def parse_month_line(line):
+	month = RE_MONTH.search(line)
+	return z2h(month.group(1))
+
+
+def parse_day_event(line):
+	day = RE_EVENT_D.search(line)
+	return z2h(day.group(1))
+
+
+def parse_span_event_d(line):
+	day = RE_EVENT_D_D.search(line)
+	return (z2h(day.group(1)), z2h(day.group(2)))
+
+
+def parse_span_event_md(line):
+	day = RE_EVENT_D_MD.search(line)
+	return (z2h(day.group(1)), z2h(day.group(2)), z2h(day.group(3)))
 
 
 def parse(url, now):
@@ -93,27 +97,50 @@ def parse(url, now):
 	cal.add("prodid", f"津山高専行事予定{now.year}年度版（{today_str}時点）")
 	cal.add("version", "2.0")
 
-	is_next_year = False
+	cur_year = now.year
 	cur_month = 4
 	for line in html_lines:
-		line = line.strip().replace("  ", "")
-		line_type = take_line_type(line)
+		line = remove_garbage(line.strip())
 
+		event = EventData()
+		event.year = cur_year
+
+		subject = add_type(line.split("　")[-1])
+		event.subject = subject
+
+		line_type = get_line_type(line)
 		if line_type == 0:
+			# 予定に関係ない
 			continue
 
 		elif line_type == 1:
+			# 月表示
 			cur_month = parse_month_line(line)
-			is_next_year = cur_month <= 3
+			if cur_month >= 1 and cur_month <= 3:
+				cur_year = now.year + 1
+			else:
+				cur_year = now.year
+			continue
 
 		elif line_type == 2:
-			event_data = parse_event_line(line, cur_month)
-			if is_next_year:
-				event_data.year = now.year + 1
-			else:
-				event_data.year = now.year
-			event_data.month_from = cur_month
-			cal.add_component(event_data.to_ical_event())
+			# 一日のみの予定
+			day = parse_day_event(line)
+			event.month_from = event.month_to = cur_month
+			event.day_from = event.day_to = day
+
+		elif line_type == 3:
+			# 期間予定（日〜日）
+			day_from, day_to = parse_span_event_d(line)
+			event.month_from = event.month_to = cur_month
+			event.day_from, event.day_to = day_from, day_to
+
+		elif line_type == 4:
+			# 期間予定（日〜月日）
+			day_from, month_to, day_to = parse_span_event_md(line)
+			event.month_from, event.month_to = cur_month, month_to
+			event.day_from, event.day_to = day_from, day_to
+
+		cal.add_component(event.to_ical_event())
 
 	return cal.to_ical().decode("utf-8")
 
