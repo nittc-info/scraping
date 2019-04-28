@@ -6,8 +6,8 @@ from icalendar import Calendar, Event, vDate
 
 RE_MONTH = re.compile(r'＜([０-９]+)月＞')
 RE_EVENT_D = re.compile(r"([０-９]+)日（.）")
-RE_EVENT_D_D = re.compile(r"([０-９]+)日（.）〜([０-９]+)日（.）")
-RE_EVENT_D_MD = re.compile(r"([０-９]+)日（.）〜([０-９]+)月([０-９]+)日（.）")
+RE_EVENT_D_D = re.compile(r"([０-９]+)日（.）～([０-９]+)日（.）")
+RE_EVENT_D_MD = re.compile(r"([０-９]+)日（.）～([０-９]+)月([０-９]+)日（.）")
 
 class EventData:
 	def __init__(self):
@@ -36,10 +36,10 @@ def z2h(num):
 
 
 def get_line_type(html_line):
-	if RE_MONTH.search(html_line): return 1
-	if RE_EVENT_D.search(html_line): return 2
-	if RE_EVENT_D_D.search(html_line): return 3
 	if RE_EVENT_D_MD.search(html_line): return 4
+	if RE_EVENT_D_D.search(html_line): return 3
+	if RE_EVENT_D.search(html_line): return 2
+	if RE_MONTH.search(html_line): return 1	
 	return 0
 
 
