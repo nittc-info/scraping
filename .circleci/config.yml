@@ -36,7 +36,7 @@ jobs:
           name: update notice
           when: always
           command: |
-            pipenv run python tnct-info/notice.py
+            pipenv run python tnct-info/notice.py atom.xml
 
       - save_cache:
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
