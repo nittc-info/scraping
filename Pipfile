@@ -9,6 +9,7 @@ verify_ssl = true
 icalendar = "*"
 requests = "*"
 beautifulsoup4 = "*"
+feedgen = "*"
 
 [requires]
 python_version = "3.6"
