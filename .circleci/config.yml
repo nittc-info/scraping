@@ -22,15 +22,17 @@ jobs:
             pipenv install
 
       - run:
+          name: configure git
+          command: |
+            git config --global user.email arata04962@gmail.com
+            git config --global user.name arata-nvm
+
+      - run:
           name: update calendar
           when: always
           command: |
             pipenv run python tnct-info/event.py tnct-calendar.ics
-            git config --global user.email arata04962@gmail.com
-            git config --global user.name arata-nvm
             git add out/tnct-calendar.ics
-            git commit -m "[ci skip] Update tnct-calendar.ics" --allow-empty
-            git push -f origin master
 
       - run:
           name: update notice
@@ -38,7 +40,18 @@ jobs:
           command: |
             pipenv run python tnct-info/notice.py atom.xml
             git add out/atom.xml
-            git commit -m "[ci skip] Update atom.xml" --allow-empty
+
+      - run:
+          name: update class info
+          when: always
+          command: |
+            pipenv run python tnct-info/class.py tnct-calendar-class.ics
+            git add out/tnct-calendar-class.ics
+
+      - run:
+          name: git commit and push
+          command: |
+            git commit -m "[ci skip] Update" --allow-empty
             git push -f origin master
 
       - save_cache:
