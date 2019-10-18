@@ -13,7 +13,7 @@ jobs:
       - restore_cache:
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
 
-      - run: echo $SLACK_TOKEN > secret
+      - run: echo ${FIREBASE_AUTHKEY} > ${FIREBASE_AUTHKEY_PATH}
 
       - run:
           name: install dependencies
@@ -22,37 +22,10 @@ jobs:
             pipenv install
 
       - run:
-          name: configure git
-          command: |
-            git config --global user.email arata04962@gmail.com
-            git config --global user.name arata-nvm
-
-      - run:
-          name: update calendar
-          when: always
-          command: |
-            pipenv run python tnct-info/event.py tnct-calendar.ics
-            git add out/tnct-calendar.ics
-
-      - run:
-          name: update notice
-          when: always
-          command: |
-            pipenv run python tnct-info/notice.py atom.xml
-            git add out/atom.xml
-
-      - run:
           name: update class info
           when: always
           command: |
-            pipenv run python tnct-info/class.py tnct-calendar-class.ics
-            git add out/tnct-calendar-class.ics
-
-      - run:
-          name: git commit and push
-          command: |
-            git commit -m "[ci skip] Update" --allow-empty
-            git push -f origin master
+            pipenv run python tnct-info/main.py
 
       - save_cache:
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
