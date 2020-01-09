@@ -31,5 +31,14 @@ def add_class_to_db(col, ci):
         logger.info(f'Added :{ci}')
 
 
+def update_event(is_debug: bool):
+    ee = EventExtractor()
+    cal = ee.extract()
+    if not is_debug:
+        with open('docs/events.ical', 'w') as f:
+            f.write(cal)
+    logger.info('Event calender updated.')
+
+
 if __name__ == '__main__':
     main()
