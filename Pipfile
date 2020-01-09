@@ -9,6 +9,7 @@ verify_ssl = true
 firebase-admin = "*"
 requests = "*"
 colorama = "*"
+icalendar = "*"
 
 [requires]
-python_version = "3.7.4"
+python_version = "3.8.1"
