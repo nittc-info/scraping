@@ -66,7 +66,7 @@ class EventExtractor:
         event.year = self.current_year
         event.month_from = event.month_to = self.current_month
         event.day_from = event.day_to = z2h(match[0])
-        event.subject = match[1]
+        event.subject = self.add_tag(match[1])
         return event
 
     def parse_event_d_d_line(self, match: [re.Match]):
@@ -75,7 +75,7 @@ class EventExtractor:
         event.month_from = event.month_to = self.current_month
         event.day_from = z2h(match[0])
         event.day_to = z2h(match[1])
-        event.subject = match[2]
+        event.subject = self.add_tag(match[2])
         return event
 
     def parse_event_d_md_line(self, match: [re.Match]):
@@ -85,13 +85,19 @@ class EventExtractor:
         event.month_to = z2h(match[1])
         event.day_from = z2h(match[0])
         event.day_to = z2h(match[2])
-        event.subject = match[3]
+        event.subject = self.add_tag(match[3])
         return event
 
     def add_events_to_calender(self, cal: Calendar, events: [EventData]):
         for event in events:
             cal.add_component(event.to_ical_event())
         return cal
+
+    def add_tag(self, subject: str):
+        keyword = "寮"
+        if keyword in subject:
+            return f"【寮】{subject}"
+        return f"【学校】{subject}"
 
     def extract(self) -> str:
         url = f"http://www.tsuyama-ct.ac.jp/gyoujiVer4/gyouji.html"
