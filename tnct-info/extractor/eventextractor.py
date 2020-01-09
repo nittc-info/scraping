@@ -7,7 +7,6 @@ from libs.web import get_html_source, remove_tags
 
 
 class EventExtractor:
-
     # ＜１月＞
     RE_MONTH = re.compile(r'＜([０-９]+)月＞')
     # １日（月）
@@ -22,11 +21,15 @@ class EventExtractor:
         self.today = datetime.now(jst)
         self.today_str = self.today.strftime('%Y%m%d')
         self.current_month = 4
+        self.current_year = self.today.year
+        # 1-3月のとき、来年の話になってしまうので
+        if 1 <= self.today.month <= 3:
+            self.current_year -= 1
 
     def create_calendar(self) -> Calendar:
         cal = Calendar()
         time = self.today.strftime('%Y.%m.%d')
-        cal.add('prodid', f'津山高専行事予定{self.today.year}年度版（{time}時点）')
+        cal.add('prodid', f'津山高専行事予定{self.current_year}年度版（{time}時点）')
         cal.add('version', '2.0')
         return cal
 
@@ -55,10 +58,12 @@ class EventExtractor:
 
     def parse_month_line(self, match: [re.Match]):
         self.current_month = z2h(match[1])
+        if self.current_month == 1:
+            self.current_year += 1
 
     def parse_event_d_line(self, match: [re.Match]):
         event = EventData()
-        event.year = self.today.year
+        event.year = self.current_year
         event.month_from = event.month_to = self.current_month
         event.day_from = event.day_to = z2h(match[1])
         event.subject = match[2]
@@ -66,7 +71,7 @@ class EventExtractor:
 
     def parse_event_d_d_line(self, match: [re.Match]):
         event = EventData()
-        event.year = self.today.year
+        event.year = self.current_year
         event.month_from = event.month_to = self.current_month
         event.day_from = z2h(match[1])
         event.day_to = z2h(match[2])
@@ -75,7 +80,7 @@ class EventExtractor:
 
     def parse_event_d_md_line(self, match: [re.Match]):
         event = EventData()
-        event.year = self.today.year
+        event.year = self.current_year
         event.month_from = self.current_month
         event.month_to = z2h(match[2])
         event.day_from = z2h(match[1])
