@@ -2,37 +2,46 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.7.4
+      - image: circleci/python:3.8.1
 
     working_directory: ~/repo
 
     steps:
       - checkout
       - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.8/site-packages
       - restore_cache:
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
 
       - run: echo ${FIREBASE_AUTHKEY} > ${FIREBASE_AUTHKEY_PATH}
 
       - run:
-          name: install dependencies
+          name: Install dependencies
           command: |
             sudo pip install pipenv
             pipenv install
 
       - run:
-          name: update class info
+          name: Update class info
           when: always
           command: |
             pipenv run python tnct-info/main.py
+
+      - run:
+          name: Push document to repository
+          command: |
+            git config --global user.email ${GIT_EMAIL}
+            git config --global user.name ${GIT_NAME}
+            git add docs/
+            git commit -m "[ci skip] Update documents" --allow-empty
+            git push -f origin master
 
       - save_cache:
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
             - ".venv"
             - "/usr/local/bin"
-            - "/usr/local/lib/python3.6/site-packages"
+            - "/usr/local/lib/python3.8/site-packages"
 
 workflows:
   version: 2
