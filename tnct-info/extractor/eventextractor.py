@@ -53,7 +53,7 @@ class EventExtractor:
 
         match = self.RE_MONTH.findall(html_line)
         if match:
-            self.parse_month_line(match[0])
+            self.parse_month_line(match)
         return None
 
     def parse_month_line(self, match: [re.Match]):
