@@ -39,25 +39,25 @@ class EventExtractor:
         return (event for event in parsed_events if event is not None)
 
     def parse_line(self, html_line: str):
-        match = self.RE_EVENT_D_MD.match(html_line)
+        match = self.RE_EVENT_D_MD.findall(html_line)
         if match:
-            return self.parse_event_d_md_line(match)
+            return self.parse_event_d_md_line(match[0])
 
-        match = self.RE_EVENT_D_D.match(html_line)
+        match = self.RE_EVENT_D_D.findall(html_line)
         if match:
-            return self.parse_event_d_d_line(match)
+            return self.parse_event_d_d_line(match[0])
 
-        match = self.RE_EVENT_D.match(html_line)
+        match = self.RE_EVENT_D.findall(html_line)
         if match:
-            return self.parse_event_d_line(match)
+            return self.parse_event_d_line(match[0])
 
-        match = self.RE_MONTH.match(html_line)
+        match = self.RE_MONTH.findall(html_line)
         if match:
-            self.parse_month_line(match)
+            self.parse_month_line(match[0])
         return None
 
     def parse_month_line(self, match: [re.Match]):
-        self.current_month = z2h(match[1])
+        self.current_month = z2h(match[0])
         if self.current_month == 1:
             self.current_year += 1
 
@@ -65,27 +65,27 @@ class EventExtractor:
         event = EventData()
         event.year = self.current_year
         event.month_from = event.month_to = self.current_month
-        event.day_from = event.day_to = z2h(match[1])
-        event.subject = match[2]
+        event.day_from = event.day_to = z2h(match[0])
+        event.subject = match[1]
         return event
 
     def parse_event_d_d_line(self, match: [re.Match]):
         event = EventData()
         event.year = self.current_year
         event.month_from = event.month_to = self.current_month
-        event.day_from = z2h(match[1])
-        event.day_to = z2h(match[2])
-        event.subject = match[3]
+        event.day_from = z2h(match[0])
+        event.day_to = z2h(match[1])
+        event.subject = match[2]
         return event
 
     def parse_event_d_md_line(self, match: [re.Match]):
         event = EventData()
         event.year = self.current_year
         event.month_from = self.current_month
-        event.month_to = z2h(match[2])
-        event.day_from = z2h(match[1])
-        event.day_to = z2h(match[3])
-        event.subject = match[4]
+        event.month_to = z2h(match[1])
+        event.day_from = z2h(match[0])
+        event.day_to = z2h(match[2])
+        event.subject = match[3]
         return event
 
     def add_events_to_calender(self, cal: Calendar, events: [EventData]):
