@@ -1,6 +1,9 @@
 import argparse
 from libs import logger, db
 from extractor.classextractor import ClassExtractor
+from extractor.eventextractor import EventExtractor
+
+
 def main():
     is_debug = is_debugging()
     update_class(is_debug)
