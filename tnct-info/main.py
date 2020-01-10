@@ -2,10 +2,12 @@ import argparse
 from libs import logger, db
 from extractor.classextractor import ClassExtractor
 from extractor.eventextractor import EventExtractor
+from extractor.noticeextractor import NoticeExtractor
 
 
 def main():
     is_debug = is_debugging()
+    update_notice(is_debug)
     update_class(is_debug)
     update_event(is_debug)
 
@@ -38,6 +40,15 @@ def update_event(is_debug: bool):
         with open('docs/events.ical', 'w') as f:
             f.write(cal)
     logger.info('Event calender updated.')
+
+
+def update_notice(is_debug: bool):
+    ne = NoticeExtractor()
+    feed = ne.extract()
+    if not is_debug:
+        with open('docs/notices.xml', 'w') as f:
+            f.write(feed)
+    logger.info('Notice updated.')
 
 
 if __name__ == '__main__':
