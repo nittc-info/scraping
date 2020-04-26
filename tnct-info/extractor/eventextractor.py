@@ -90,7 +90,11 @@ class EventExtractor:
 
     def add_events_to_calender(self, cal: Calendar, events: [EventData]):
         for event in events:
-            cal.add_component(event.to_ical_event())
+            try:
+                cal.add_component(event.to_ical_event())
+            except ValueError as e:
+                # 月をまたがる予定のパースで落ちるのを防ぐ
+                print(e)
         return cal
 
     def add_tag(self, subject: str):
