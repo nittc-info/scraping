@@ -96,10 +96,10 @@
         },
         "google-auth": {
             "hashes": [
-                "sha256:0c41a453b9a8e77975bfa436b8daedac00aed1c545d84410daff8272fff40fbb",
-                "sha256:e63b2210e03c4ed829063b72c4af0c4b867c2788efb3210b6b9439b488bd3afd"
+                "sha256:2243db98475f7f2033c41af5185333cbf13780e8f5f96eaadd997c6f34181dcc",
+                "sha256:23cfeeb71d98b7f51cd33650779d35291aeb8b23384976d497805d12eefc6e9b"
             ],
-            "version": "==1.14.1"
+            "version": "==1.14.2"
         },
         "google-auth-httplib2": {
             "hashes": [
@@ -125,10 +125,10 @@
         },
         "google-cloud-storage": {
             "hashes": [
-                "sha256:07998ac15de406e7b7d72c98713d598e060399858a699eeb2ca45dc7f22a7af9",
-                "sha256:35ecd0b00d4b4147c666d73fa2a5c0c7d9a7fe0fe430a4f544d428f5dc68b544"
+                "sha256:0b28536acab1d7e856a7a89bbfcad41f26f40b46af59786ca874ff0f94bbc0f9",
+                "sha256:a7b5c326e7307a83fa1f1f0ef71aba9ad1f3a2bc6a768401e13fc02369fd8612"
             ],
-            "version": "==1.28.0"
+            "version": "==1.28.1"
         },
         "google-resumable-media": {
             "hashes": [
@@ -188,11 +188,11 @@
         },
         "icalendar": {
             "hashes": [
-                "sha256:9bfad29eaa2cc82be4c6aa0bf3bd638906e33b5abdb729c2136374f320ff99c1",
-                "sha256:b8ec6d76a23e7d196af97d64361ab37df3840e3f09ccb3ee66b4ba598c94d693"
+                "sha256:2f400b37353160af259019938e4397bf823f06a67ce9c50a58b95eb563720f00",
+                "sha256:7e6fe7232622abe32d8f54d0936ffcd5a9087198a4c2f1ec1803a7dd9fdd979f"
             ],
             "index": "pypi",
-            "version": "==4.0.5"
+            "version": "==4.0.6"
         },
         "idna": {
             "hashes": [
