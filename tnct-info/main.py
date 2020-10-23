@@ -37,8 +37,11 @@ def update_event(is_debug: bool):
     ee = EventExtractor()
     cal = ee.extract()
     if not is_debug:
-        with open('docs/events.ical', 'w') as f:
-            f.write(cal)
+        file_ical = open('docs/events.ical', 'w')
+        file_ics = open('docs/events.ics', 'w')
+        with file_ical, file_ics:
+            file_ical.write(cal)
+            file_ics.write(cal)
     logger.info('Event calender updated.')
 
 
