@@ -1,0 +1,42 @@
+name: Scrape
+
+on:
+  push:
+    branches: [ master ]
+  schedule:
+    - cron: '0 22 * * *'
+
+env:
+  FIREBASE_AUTHKEY: ${{secrets.FIREBASE_AUTHKEY}}
+  FIREBASE_AUTHKEY_PATH: ${{secrets.FIREBASE_AUTHKEY_PATH}}
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Prepare secrets
+      run: |
+        echo "${FIREBASE_AUTHKEY}" > ${FIREBASE_AUTHKEY_PATH}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry install
+
+    - name: Scrape
+      run: |
+        poetry run python main.py
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs
