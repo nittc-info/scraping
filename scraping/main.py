@@ -1,8 +1,8 @@
 import argparse
 from libs import logger, db
-from extractor.classextractor import ClassExtractor
-from extractor.eventextractor import EventExtractor
-from extractor.noticeextractor import NoticeExtractor
+from scrapers.classextractor import ClassExtractor
+from scrapers.eventextractor import EventExtractor
+from scrapers.noticeextractor import NoticeExtractor
 
 
 def main():
