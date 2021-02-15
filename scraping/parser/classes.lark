@@ -1,0 +1,78 @@
+change: date class course -> change_1
+       | date class course arrow course -> change_2
+       | date class period arrow course -> change_3
+       | date class course arrow note* -> change_4
+
+supplement: date class course 
+
+cancellation: date class course 
+
+
+// TODO
+date: INT "月" INT "日"? "(" JA_LETTER ")" -> date
+    | INT "月" INT "日"? "(" JA_LETTER ")以降"? -> date_after
+    | "前期中(" JA_LETTER ")" -> date_first_term
+
+class: class_inner -> class_1
+     | class_inner (("・" | "/") class_inner)+ -> class_2
+
+class_inner: (GRADE "-" CLASS_NUMBER) -> class_inner_first
+           | (GRADE "-" DEPARTMENT) -> class_inner_course
+           | (GRADE "-" DEPARTMENT+) -> class_inner_multiple_courses
+           | (DEPARTMENT "-" GRADE) -> class_inner_dept
+           | ("専攻科" INT "年") -> class_inner_adv
+           | (ADV_DEPARTMENT "-"? GRADE) -> class_inner_adv_dept
+           | (GRADE "年留学生") -> class_inner_inter_all
+           | ("留学生(" class ")") -> class_inner_inter
+           | (GRADE "年全") -> class_inner_all
+           | (GRADE "年選択") -> class_inner_select
+
+arrow: ARROW
+
+course: course_inner -> course_1
+      | course_inner "、" course_inner -> course_2
+
+course_inner: period course_name ("（" instructor "）")? note*
+      | course_name ("（" instructor "）")? note*
+      | date period note*
+
+course_name: NAME -> course_name_default
+           | NAME "（希望者）" -> course_name_applicant
+
+period: "[" INT "限]" -> period_1
+      | "[" INT ("・" | "～") INT "限]" -> period_2
+      | "[" period_time "-" period_time "]" -> period_3
+
+period_time: INT ":" INT
+
+instructor: INSTRUCTOR -> instructor_1
+          | INSTRUCTOR "（" INSTRUCTOR "）" -> instructor_2
+
+
+note: "【" NOTE "】"
+
+
+ARROW: /[→←]/
+
+GRADE: /[1-5]/
+DEPARTMENT: /[SMEC]/
+ADV_DEPARTMENT: "MS" | "EC"
+CLASS_NUMBER: /[1-4]/
+
+NAME: (LETTER | JA_LETTER | DIGIT | /[／・]/)+
+INSTRUCTOR: (LETTER | JA_LETTER | DIGIT)+
+NOTE: (LETTER | JA_LETTER | DIGIT | /[\[\]\(\) （）・、～]/)+
+
+JA_HIRAGANA: /[ぁ-ん]/
+JA_KATAKANA: /[ァ-ンー]/
+JA_NUMBER: /[０-９]/ 
+JA_ALPHABET: /[Ａ-Ｚ]/
+JA_KANJI: /[\u3400-\u4DB5\u4E00-\u9FCB\uF900-\uFA6A々]/
+JA_LETTER: JA_HIRAGANA | JA_KATAKANA | JA_NUMBER | JA_ALPHABET | JA_KANJI
+JA_WORD: JA_LETTER+
+EN_JA_WORD: (LETTER | JA_LETTER)+
+
+%import common.LETTER
+%import common.INT
+%import common.DIGIT
+%ignore " "

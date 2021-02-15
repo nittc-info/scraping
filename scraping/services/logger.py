@@ -2,7 +2,7 @@ import logging
 import colorama
 from colorama import Fore, Style
 
-logger = logging.getLogger("scraping")
+logger = logging.getLogger('scraping')
 logger.setLevel(logging.INFO)
 
 handler = logging.StreamHandler()
