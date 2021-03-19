@@ -86,7 +86,7 @@ python-dateutil = "*"
 
 [[package]]
 name = "firebase-admin"
-version = "4.5.1"
+version = "4.5.3"
 description = "Firebase Admin Python SDK"
 category = "main"
 optional = false
@@ -494,7 +494,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "e82c74d97d6395d4b0a80dcefc09b6f019d8e3b5d129fed49a31dc9c41d8c44e"
+content-hash = "4cef716079a3bdf81c8a5b9a2d2cab47e25210e320e4ba6e2463fff0a40f8145"
 
 [metadata.files]
 beautifulsoup4 = [
@@ -565,8 +565,8 @@ feedgen = [
     {file = "feedgen-0.9.0.tar.gz", hash = "sha256:8e811bdbbed6570034950db23a4388453628a70e689a6e8303ccec430f5a804a"},
 ]
 firebase-admin = [
-    {file = "firebase_admin-4.5.1-py3-none-any.whl", hash = "sha256:da27e214da814f21d3f1473a31a107c9abc2bb50a297ef1036286b5ad2169d49"},
-    {file = "firebase_admin-4.5.1.tar.gz", hash = "sha256:561a6e91804501a0cab94d446fc7562db2590fa1ee10db164df14a8c922a33f8"},
+    {file = "firebase_admin-4.5.3-py3-none-any.whl", hash = "sha256:471045bf72bb68ccf6d9d19a35836609b7d525fcdac73aa619d274e4c5585e0a"},
+    {file = "firebase_admin-4.5.3.tar.gz", hash = "sha256:f0c1c9a6e56b497c8bbaa55a679a402f79c34c2c24971b11ea909031b520ed32"},
 ]
 google-api-core = [
     {file = "google-api-core-1.26.0.tar.gz", hash = "sha256:4230ec764d48ca934fe69b85cc217e31e844e176f68df93e252acd55350e730b"},
