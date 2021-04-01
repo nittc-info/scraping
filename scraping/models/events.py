@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from icalendar import Event as IEvent, vDate
 
 
@@ -22,6 +22,8 @@ class Event:
     def to_ical_event(self) -> IEvent:
         dtstart = datetime(self.year, self.month_from, self.day_from)
         dtend = datetime(self.year, self.month_to, self.day_to)
+
+        dtend += timedelta(days=+1)
 
         e = IEvent()
         e.add("summary", self.subject)

@@ -9,11 +9,11 @@ EVENTS_URL = 'http://www.tsuyama-ct.ac.jp/gyoujiVer4/gyouji.html'
 # ＜１月＞
 RE_MONTH = re.compile(r'＜([０-９]+)月＞')
 # １日（月）
-RE_EVENT_D = re.compile(r"([０-９]+)日（.）　(.*)")
+RE_EVENT_D = re.compile(r"([０-９]+)日（.）　?(.*)")
 # １日（月）〜２日（火）
-RE_EVENT_D_D = re.compile(r"([０-９]+)日（.）～([０-９]+)日（.）　(.*)")
+RE_EVENT_D_D = re.compile(r"([０-９]+)日（.）～([０-９]+)日（.）　?(.*)")
 # １日（月）〜１月２日（火）
-RE_EVENT_D_MD = re.compile(r"([０-９]+)日（.）～([０-９]+)月([０-９]+)日（.）　(.*)")
+RE_EVENT_D_MD = re.compile(r"([０-９]+)日（.）～([０-９]+)月([０-９]+)日（.）　?(.*)")
 
 
 def add_tag(subject: str):
