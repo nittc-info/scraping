@@ -6,7 +6,7 @@ authors = ["arata <arata04962@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-firebase-admin = "^4.5.1"
+firebase-admin = "^5.0.0"
 requests = "^2.25.1"
 colorama = "^0.4.4"
 icalendar = "^4.0.7"

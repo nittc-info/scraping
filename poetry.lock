@@ -86,18 +86,18 @@ python-dateutil = "*"
 
 [[package]]
 name = "firebase-admin"
-version = "4.5.1"
+version = "5.0.0"
 description = "Firebase Admin Python SDK"
 category = "main"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.6"
 
 [package.dependencies]
 cachecontrol = ">=0.12.6"
-google-api-core = {version = ">=1.14.0,<2.0.0dev", extras = ["grpc"], markers = "platform_python_implementation != \"PyPy\""}
+google-api-core = {version = ">=1.22.1,<2.0.0dev", extras = ["grpc"], markers = "platform_python_implementation != \"PyPy\""}
 google-api-python-client = ">=1.7.8"
-google-cloud-firestore = {version = ">=1.4.0", markers = "platform_python_implementation != \"PyPy\""}
-google-cloud-storage = ">=1.18.0"
+google-cloud-firestore = {version = ">=2.1.0", markers = "platform_python_implementation != \"PyPy\""}
+google-cloud-storage = ">=1.37.1"
 
 [[package]]
 name = "google-api-core"
@@ -186,7 +186,7 @@ grpc = ["grpcio (>=1.8.2,<2.0dev)"]
 
 [[package]]
 name = "google-cloud-firestore"
-version = "2.0.2"
+version = "2.1.0"
 description = "Google Cloud Firestore API client library"
 category = "main"
 optional = false
@@ -200,7 +200,7 @@ pytz = "*"
 
 [[package]]
 name = "google-cloud-storage"
-version = "1.36.0"
+version = "1.38.0"
 description = "Google Cloud Storage API client library"
 category = "main"
 optional = false
@@ -494,7 +494,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "e82c74d97d6395d4b0a80dcefc09b6f019d8e3b5d129fed49a31dc9c41d8c44e"
+content-hash = "df03a269ef3aca95b64cb694f70f589493bcc303d896387cb459aa60c77d70ed"
 
 [metadata.files]
 beautifulsoup4 = [
@@ -565,8 +565,8 @@ feedgen = [
     {file = "feedgen-0.9.0.tar.gz", hash = "sha256:8e811bdbbed6570034950db23a4388453628a70e689a6e8303ccec430f5a804a"},
 ]
 firebase-admin = [
-    {file = "firebase_admin-4.5.1-py3-none-any.whl", hash = "sha256:da27e214da814f21d3f1473a31a107c9abc2bb50a297ef1036286b5ad2169d49"},
-    {file = "firebase_admin-4.5.1.tar.gz", hash = "sha256:561a6e91804501a0cab94d446fc7562db2590fa1ee10db164df14a8c922a33f8"},
+    {file = "firebase_admin-5.0.0-py3-none-any.whl", hash = "sha256:1004695da81393a6c782537bb98eb7eb3bf186914412e9e879be967b7356690c"},
+    {file = "firebase_admin-5.0.0.tar.gz", hash = "sha256:9627cf4f8945ac5cad80cdd681e436cc721c4fc41865800af74f00700df5b427"},
 ]
 google-api-core = [
     {file = "google-api-core-1.26.0.tar.gz", hash = "sha256:4230ec764d48ca934fe69b85cc217e31e844e176f68df93e252acd55350e730b"},
@@ -589,12 +589,12 @@ google-cloud-core = [
     {file = "google_cloud_core-1.6.0-py2.py3-none-any.whl", hash = "sha256:40d9c2da2d03549b5ac3dcccf289d4f15e6d1210044c6381ce45c92913e62904"},
 ]
 google-cloud-firestore = [
-    {file = "google-cloud-firestore-2.0.2.tar.gz", hash = "sha256:493d2be721d1c43654b114c40566cfc77d659d14e0e79fa8ead2ae38ef13bae0"},
-    {file = "google_cloud_firestore-2.0.2-py2.py3-none-any.whl", hash = "sha256:edfc0b32cada10d58d3fb4654f9d806bb0506341fc544301130b45861b27d17a"},
+    {file = "google-cloud-firestore-2.1.0.tar.gz", hash = "sha256:906ebc7c6f44ab0bc4ef69f373cf4c5f0110fd860433db581faccada24c2149a"},
+    {file = "google_cloud_firestore-2.1.0-py2.py3-none-any.whl", hash = "sha256:64f679208ce6910e247aaf9424597f3b6f833a4fee30e81f163306cb5c316d33"},
 ]
 google-cloud-storage = [
-    {file = "google-cloud-storage-1.36.0.tar.gz", hash = "sha256:9517e26cadb4e52fcd11e83cd1b4051e72351a2e518078102ad2f1b9f4d704bc"},
-    {file = "google_cloud_storage-1.36.0-py2.py3-none-any.whl", hash = "sha256:0880af3c8706a52785ee2c6dc6856e33aa8bf951083b145a889137344a7201ad"},
+    {file = "google-cloud-storage-1.38.0.tar.gz", hash = "sha256:162011d66f64b8dc5d7936609a5daf0066cc521231546aea02c126a5559446c4"},
+    {file = "google_cloud_storage-1.38.0-py2.py3-none-any.whl", hash = "sha256:69499560ec8234339ce831704419a2288c409a422f6e9ed1facc9345412ee637"},
 ]
 google-crc32c = [
     {file = "google-crc32c-1.1.2.tar.gz", hash = "sha256:dff5bd1236737f66950999d25de7a78144548ebac7788d30ada8c1b6ead60b27"},
