@@ -1,53 +1,30 @@
-from dataclasses import dataclass, field
+from enum import Enum
+from hashlib import md5
+from dataclasses import dataclass
+
+
+class ChangeType(Enum):
+    Change = 0
+    Supplement = 1
+    Cancellation = 2
 
 
 @dataclass
-class Period:
-    begin: int = 0
-    end: int = 0
+class ClassChange:
+    type: ChangeType
+    subject: str
+    published_date: str
+    date: str
 
 
-@dataclass
-class Class:
-    department_id: int = 0
-    grade: int = 0
-    class_id: int = 0
-    international_student: bool = False
-    note: str = ''
+def class_id(c: ClassChange) -> str:
+    return md5(c.subject.encode('utf-8')).hexdigest() + str(c.date)
 
 
-@dataclass
-class Course:
-    date: str = ''
-    period: Period = None
-    name: str = ''
-    instructor: str = ''
-
-
-@dataclass
-class Change:
-    classes: list[Class] = field(default_factory=list)
-    course_from: list[Course] = field(default_factory=list)
-    course_to: list[Course] = field(default_factory=list)
-    notes: list[str] = field(default_factory=list)
-
-
-@dataclass
-class Supplement:
-    classes: list[Class] = field(default_factory=list)
-    course: Course = None
-    notes: list[str] = field(default_factory=list)
-
-
-@dataclass
-class Cancellation:
-    classes: list[Class] = field(default_factory=list)
-    course: Course = None
-    notes: list[str] = field(default_factory=list)
-
-
-@dataclass
-class Classes:
-    changes: list[Change] = field(default_factory=list)
-    supplements: list[Supplement] = field(default_factory=list)
-    cancellations: list[Cancellation] = field(default_factory=list)
+def class_to_dict(c: ClassChange) -> object:
+    return {
+        'type': c.type.value,
+        'subject': c.subject,
+        'published_date': c.published_date,
+        'date': c.date,
+    }

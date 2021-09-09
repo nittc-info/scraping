@@ -1,118 +1,103 @@
+from os import closerange
+import re
 import json
 from bs4 import BeautifulSoup
 from dataclasses import asdict
-from scraping.services import firestore, logger, http, date
-from scraping.parser import classes
-from scraping.models.classes import Classes
+from scraping.services import firestore, logger, web, dateutil, twitter
+from scraping.models.classes import ClassChange, ChangeType, class_id, class_to_dict
 
 CLASS_URL_FORMAT = 'https://www.tsuyama-ct.ac.jp/oshiraseVer4/renraku/renraku{}.html'
 
+RE_CLASS_MD = re.compile(r"(\d+)月(\d+)日")
 
-def gen_class_id(c: dict) -> str:
-    return '{}-{}-{}'.format(
-        c['department_id'],
-        c['grade'],
-        c['class_id'],
-    )
+HEADERS = ["授業変更", "補講", "休講"]
+MAX_LETTERS = 140
 
 
-def gen_course_id(c: dict) -> str:
-    return '{}-{}-{}'.format(
-        c['date'],
-        c['period']['begin'],
-        c['period']['end'],
-    )
+def format_for_twitter(title: str, classes: list[ClassChange]) -> list[str]:
+    tweets = []
+    tweet = title + "\n"
+
+    current_type = -1
+    for c in sorted(classes, key=lambda c: c.type.value):
+        if c.type.value != current_type:
+            current_type = c.type.value
+            tweet += HEADERS[current_type] + "\n"
+        line = c.subject + "\n"
+        if len(tweet) + len(line) >= MAX_LETTERS:
+            tweets.append(tweet)
+            tweet = HEADERS[current_type] + "\n"
+        tweet += line
+    tweets.append(tweet)
+    return tweets
 
 
-def split_classes(item) -> dict:
-    items = []
-    for class_ in item.classes:
-        new_item = asdict(item)
-        del new_item['classes']
-        new_item['class'] = asdict(class_)
-        items.append(new_item)
-    return items
+def update_today(classes: list[ClassChange]):
+    logger.info("update_today")
+    today = dateutil.today_str()
+    classes_to_tweet = filter(lambda c: c.date == today, classes)
+    logger.info(str(list(classes_to_tweet)))
+    tweets = format_for_twitter("連絡事項（今日）", classes_to_tweet)
+    for tweet in tweets:
+        twitter.tweet(tweet)
 
 
-def update(c: Classes):
-    published_date = date.today_str()
+def update_published(classes: list[ClassChange]):
+    logger.info("update_published")
+    classes_to_tweet = []
+    for c in classes:
+        c_id = class_id(c)
+        c_dict = class_to_dict(c)
+        if firestore.add('classes', c_id, c_dict):
+            classes_to_tweet.append(c)
 
-    for change in c.changes:
-        for new_change in split_classes(change):
-            new_change['published_date'] = published_date
-
-            change_id = '{}-{}'.format(
-                gen_course_id(
-                    (new_change['course_to'] + new_change['course_from'])[0]),
-                gen_class_id(new_change['class']),
-            )
-
-            if firestore.add('changes', change_id, new_change):
-                logger.info(f'add change: {change_id}')
-
-    for supplement in c.supplements:
-        for new_supplement in split_classes(supplement):
-            new_supplement['published_date'] = published_date
-
-            supplement_id = '{}-{}'.format(
-                gen_course_id(new_supplement['course']),
-                gen_class_id(new_supplement['class']),
-            )
-
-            if firestore.add('supplements', supplement_id, new_supplement):
-                logger.info(f'add supplement: {supplement_id}')
-
-    for cancellation in c.cancellations:
-        for new_cancellation in split_classes(cancellation):
-            new_cancellation['published_date'] = published_date
-
-            cancellation_id = '{}-{}'.format(
-                gen_course_id(new_cancellation['course']),
-                gen_class_id(new_cancellation['class']),
-            )
-
-            if firestore.add('cancellations', cancellation_id, new_cancellation):
-                logger.info(f'add cancellation: {cancellation_id}')
+    logger.info(str(classes_to_tweet))
+    tweets = format_for_twitter("連絡事項（追加）", classes_to_tweet)
+    for tweet in tweets:
+        twitter.tweet(tweet)
 
 
-def parse_at(year: int, month: int) -> tuple[list, list, list]:
+def parse_at(year: int, month: int) -> list[ClassChange]:
     page_id = f'{year}{month:02}'
     url = CLASS_URL_FORMAT.format(page_id)
-    content = http.get(url)
+    content = web.get(url)
     soup = BeautifulSoup(content, 'html.parser')
 
-    changes = []
-    if div_change := soup.find('div', id=f'{page_id}ju'):
-        for p in div_change.find_all('p'):
-            changes.append(classes.parse_change(p.text, year))
+    lines = []
+    if div := soup.find('div', id=f'{page_id}ju'):
+        lines.extend([(p.text, ChangeType.Change) for p in div.find_all('p')])
+    if div := soup.find('div', id=f'{page_id}ho'):
+        lines.extend([(p.text, ChangeType.Supplement)
+                     for p in div.find_all('p')])
+    if div := soup.find('div', id=f'{page_id}kyu'):
+        lines.extend([(p.text, ChangeType.Cancellation)
+                     for p in div.find_all('p')])
 
-    supplements = []
-    if div_supplements := soup.find('div', id=f'{page_id}ho'):
-        for p in div_supplements.find_all('p'):
-            supplements.append(classes.parse_supplement(p.text, year))
+    classes = []
+    published_date = dateutil.today_str()
+    for line, type in lines:
+        matches = RE_CLASS_MD.findall(line)
+        if len(matches) == 0:
+            logger.warning(f"date not found: `{line}`")
+            continue
+        month, day = matches[0]
+        date = f"{year:04}{int(month):02}{int(day):02}"
+        classes.append(ClassChange(type, line, published_date, date))
 
-    cancellations = []
-    if div_cancellations := soup.find('div', id=f'{page_id}kyu'):
-        for p in div_cancellations.find_all('p'):
-            cancellations.append(
-                classes.parse_cancellation(p.text, year))
-
-    return (changes, supplements, cancellations)
+    return classes
 
 
-def parse() -> Classes:
-    year, _, _ = date.today()
+def parse() -> list[ClassChange]:
+    year, _, _ = dateutil.today()
 
-    classes = Classes()
+    classes = []
     for month in range(1, 13):
         if 1 <= month <= 3:
-            changes, supplements, cancellations = parse_at(year + 1, month)
+            classes_month = parse_at(year + 1, month)
         else:
-            changes, supplements, cancellations = parse_at(year, month)
+            classes_month = parse_at(year, month)
 
-        classes.changes += changes
-        classes.supplements += supplements
-        classes.cancellations += cancellations
+        classes += classes_month
 
     return classes
 
@@ -123,8 +108,7 @@ def scrape(dry_run: bool):
     classes = parse()
 
     if not dry_run:
-        with open('./docs/classes.json', 'w', encoding='utf-8') as f:
-            f.write(json.dumps(asdict(classes), ensure_ascii=False))
-        update(classes)
+        update_published(classes)
+        update_today(classes)
 
     logger.success('the classes was successfully updated.')

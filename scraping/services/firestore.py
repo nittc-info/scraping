@@ -23,4 +23,4 @@ def set(collection: str, document: str, v):
 
 
 def exists(collection: str, document: str) -> bool:
-    return client.collection(collection).document(document)
+    return client.collection(collection).document(document).get().exists

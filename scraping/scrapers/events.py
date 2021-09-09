@@ -2,7 +2,7 @@ import re
 from unicodedata import normalize
 from icalendar import Calendar
 from scraping.models.events import Event, Date
-from scraping.services import http, date, logger
+from scraping.services import web, dateutil, logger
 
 EVENTS_URL = 'http://www.tsuyama-ct.ac.jp/gyoujiVer4/gyouji.html'
 
@@ -34,7 +34,7 @@ def z2h(s: str) -> int:
 
 def generate_ical(events: list[Event], today: Date) -> str:
     cal = Calendar()
-    today_str = f'{today.year}.{today.month:02}.{today.day:02}'
+    today_str = dateutil.today_str(".")
     cal.add('prodid', f'津山高専行事予定{today.year}年度版（{today_str}時点）')
     cal.add('version', '2.0')
 
@@ -85,7 +85,7 @@ def parse_event_d_md_line(match: re.Match, date: Date) -> Event:
     return event
 
 
-def parse_line(line: str, date: Date) -> (Event, Date):
+def parse_line(line: str, date: Date) -> tuple[Event, Date]:
     event = None
 
     if matches := RE_EVENT_D_MD.findall(line):
@@ -104,7 +104,7 @@ def parse_line(line: str, date: Date) -> (Event, Date):
 
 
 def parse(date: Date) -> list[Event]:
-    content = http.get(EVENTS_URL)
+    content = web.get(EVENTS_URL)
 
     events = []
     for line in content.split('\n'):

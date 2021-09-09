@@ -2,14 +2,14 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from feedgen.feed import FeedGenerator
 from scraping.models.news import News
-from scraping.services import http, logger
-from scraping.services.date import JST
+from scraping.services import web, logger
+from scraping.services.dateutil import JST
 
 NEWS_URL = 'https://www.tsuyama-ct.ac.jp/'
 
 
 def parse() -> list[News]:
-    content = http.get(NEWS_URL)
+    content = web.get(NEWS_URL)
     soup = BeautifulSoup(content, 'html.parser')
 
     news = []

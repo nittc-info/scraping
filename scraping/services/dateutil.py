@@ -4,7 +4,7 @@ from scraping.models.events import Date
 JST = timezone(timedelta(hours=+9), 'JST')
 
 
-def today() -> (int, int, int):
+def today() -> tuple[int, int, int]:
     today = datetime.now(JST)
     year, month, day = today.year, today.month, today.day
 
@@ -19,6 +19,6 @@ def today_date() -> Date:
     return Date(year, month, day)
 
 
-def today_str() -> str:
+def today_str(sep="") -> str:
     year, month, day = today()
-    return f'{year}-{month:02}-{day:02}'
+    return f'{year:04}{sep}{month:02}{sep}{day:02}'
