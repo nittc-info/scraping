@@ -37,6 +37,8 @@ def update_today(classes: list[ClassChange]):
     today = dateutil.today_str()
     classes_to_tweet = filter(lambda c: c.date == today, classes)
     logger.info(str(list(classes_to_tweet)))
+    if not classes_to_tweet:
+        return
     tweets = format_for_twitter("連絡事項（今日）", classes_to_tweet)
     for tweet in tweets:
         twitter.tweet(tweet)
@@ -52,6 +54,8 @@ def update_published(classes: list[ClassChange]):
             classes_to_tweet.append(c)
 
     logger.info(str(classes_to_tweet))
+    if not classes_to_tweet:
+        return
     tweets = format_for_twitter("連絡事項（追加）", classes_to_tweet)
     for tweet in tweets:
         twitter.tweet(tweet)
