@@ -116,8 +116,8 @@ def parse(date: Date) -> list[Event]:
 
 
 def scrape(dry_run: bool):
-    events = parse(date.today_date())
-    events_ical = generate_ical(events, date.today_date())
+    events = parse(dateutil.today_date())
+    events_ical = generate_ical(events, dateutil.today_date())
 
     if not dry_run:
         with open('./docs/events.ical', 'w', encoding='utf-8') as f:
