@@ -1,4 +1,6 @@
+ENV_FILE := .env
+ENV := $(shell cat $(ENV_FILE))
 run:
-	poetry run python main.py
+	$(ENV) poetry run python main.py
 
 .PHONY: run
