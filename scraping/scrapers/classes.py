@@ -35,8 +35,8 @@ def format_for_twitter(title: str, classes: list[ClassChange]) -> list[str]:
 def update_today(classes: list[ClassChange]):
     logger.info("update_today")
     today = dateutil.today_str()
-    classes_to_tweet = filter(lambda c: c.date == today, classes)
-    logger.info(str(list(classes_to_tweet)))
+    classes_to_tweet = list(filter(lambda c: c.date == today, classes))
+    logger.info(str(classes_to_tweet))
     if not classes_to_tweet:
         return
     tweets = format_for_twitter("連絡事項（今日）", classes_to_tweet)
