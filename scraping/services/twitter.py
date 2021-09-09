@@ -1,5 +1,4 @@
 import os
-import re
 import tweepy
 from scraping.services import logger
 
@@ -14,5 +13,5 @@ api = tweepy.API(auth)
 
 
 def tweet(msg):
-    logger.info(f"tweet: `{re.escape(msg)}`")
+    logger.info(f"tweet: `{msg}`")
     api.update_status(msg)
