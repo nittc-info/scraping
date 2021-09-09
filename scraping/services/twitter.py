@@ -1,5 +1,7 @@
 import os
+import re
 import tweepy
+from scraping.services import logger
 
 consumer_key = os.environ['TWITTER_CONSUMER_KEY']
 consumer_secret = os.environ['TWITTER_CONSUMER_SECRET']
@@ -12,4 +14,5 @@ api = tweepy.API(auth)
 
 
 def tweet(msg):
+    logger.info(f"tweet: `{re.escape(msg)}`")
     api.update_status(msg)
