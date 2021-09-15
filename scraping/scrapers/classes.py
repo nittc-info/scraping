@@ -14,20 +14,31 @@ HEADERS = ["授業変更", "補講", "休講"]
 MAX_LETTERS = 140
 
 
+def tweet(tweets: list[str]):
+    prev_id = None
+    for tweet in tweets:
+        status = twitter.tweet(tweet, prev_id)
+        prev_id = status.id
+
+
 def format_for_twitter(title: str, classes: list[ClassChange]) -> list[str]:
     tweets = []
     tweet = title + "\n"
 
     current_type = -1
     for c in sorted(classes, key=lambda c: c.type.value):
+        # 授業変更の種類が変わったら見出しを入れる
         if c.type.value != current_type:
             current_type = c.type.value
             tweet += HEADERS[current_type] + "\n"
+
         line = c.subject + "\n"
+        # 最大文字数に収まらない場合は分割する
         if len(tweet) + len(line) >= MAX_LETTERS:
             tweets.append(tweet)
-            tweet = HEADERS[current_type] + "\n"
+            tweet = ""
         tweet += line
+
     tweets.append(tweet)
     return tweets
 
@@ -40,8 +51,7 @@ def update_today(classes: list[ClassChange]):
     if not classes_to_tweet:
         return
     tweets = format_for_twitter("連絡事項（今日）", classes_to_tweet)
-    for tweet in tweets:
-        twitter.tweet(tweet)
+    tweet(tweets)
 
 
 def update_published(classes: list[ClassChange]):
@@ -57,8 +67,7 @@ def update_published(classes: list[ClassChange]):
     if not classes_to_tweet:
         return
     tweets = format_for_twitter("連絡事項（追加）", classes_to_tweet)
-    for tweet in tweets:
-        twitter.tweet(tweet)
+    tweet(tweets)
 
 
 def parse_at(year: int, month: int) -> list[ClassChange]:
