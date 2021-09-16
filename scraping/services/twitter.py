@@ -12,6 +12,6 @@ auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth)
 
 
-def tweet(msg):
+def tweet(msg, in_reply_to_status_id=None):
     logger.info(f"tweet: `{msg}`")
-    api.update_status(msg)
+    return api.update_status(msg, in_reply_to_status_id=in_reply_to_status_id)
