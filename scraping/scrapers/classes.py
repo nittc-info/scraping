@@ -17,7 +17,7 @@ MAX_LETTERS = 140
 def tweet(tweets: list[str]):
     prev_id = None
     for tweet in tweets:
-        status = twitter.tweet(tweet, prev_id)
+        status = twitter.tweet(tweet, in_reply_to_status_id=prev_id)
         prev_id = status.id
 
 
